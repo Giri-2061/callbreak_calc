@@ -22,9 +22,9 @@ export function PlayerCard({ playerIndex, name, totalScore, onNameChange, suit, 
 
   return (
     <div 
-      className={`card-table rounded-xl p-4 border-2 transition-all duration-300 ${
+      className={`card-table rounded-xl p-4 border-2 transition-all duration-300 relative ${
         isLeader 
-          ? "border-primary gold-glow animate-pulse-gold" 
+          ? "border-primary red-glow animate-pulse-red" 
           : "border-border hover:border-primary/50"
       }`}
     >
@@ -68,7 +68,7 @@ export function PlayerCard({ playerIndex, name, totalScore, onNameChange, suit, 
 
       {/* Total score */}
       <div className="relative">
-        <p className="text-3xl font-display font-bold gold-text">
+        <p className="text-3xl font-display font-bold red-text">
           {totalScore.toFixed(1)}
         </p>
         <p className="text-xs text-muted-foreground uppercase tracking-wider">
