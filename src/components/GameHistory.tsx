@@ -121,20 +121,33 @@ export function GameHistory({ games, onDeleteGame }: GameHistoryProps) {
                         const player = game.players[playerIdx];
                         return (
                           <div>
-                            <p className="text-xs font-semibold text-foreground mb-2">{player}'s Round History:</p>
-                            <div className="space-y-1.5">
+                            <p className="text-xs font-semibold text-foreground mb-3">{player}'s Round History</p>
+                            <div className="grid grid-cols-5 gap-2">
                               {game.rounds.map((round, roundIdx) => {
                                 const bid = round.bids[playerIdx];
                                 const tricks = round.tricks[playerIdx];
                                 const score = round.scores[playerIdx];
                                 const success = tricks >= bid;
                                 return (
-                                  <div key={roundIdx} className="flex justify-between items-center text-xs bg-background/50 p-2 rounded">
-                                    <span className="text-primary font-bold">R{roundIdx + 1}:</span>
-                                    <span className="text-muted-foreground">Bid {bid} • Won {tricks}</span>
-                                    <span className={`font-bold ${success ? "text-success" : "text-destructive"}`}>
-                                      {score > 0 ? "+" : ""}{score.toFixed(1)}
-                                    </span>
+                                  <div key={roundIdx} className={`p-2 rounded text-center text-xs border ${
+                                    success 
+                                      ? "bg-success/10 border-success/30" 
+                                      : "bg-destructive/10 border-destructive/30"
+                                  }`}>
+                                    <p className="text-primary font-bold mb-1">R{roundIdx + 1}</p>
+                                    <p className="text-muted-foreground mb-1">
+                                      <span className="text-xs">Bid</span>
+                                      <span className="font-semibold text-foreground block">{bid}</span>
+                                    </p>
+                                    <p className="text-muted-foreground mb-1">
+                                      <span className="text-xs">Won</span>
+                                      <span className="font-semibold text-foreground block">{tricks}</span>
+                                    </p>
+                                    <div className={`pt-1 border-t ${success ? "border-success/20" : "border-destructive/20"}`}>
+                                      <span className={`font-bold text-sm ${success ? "text-success" : "text-destructive"}`}>
+                                        {score > 0 ? "+" : ""}{score.toFixed(1)}
+                                      </span>
+                                    </div>
                                   </div>
                                 );
                               })}

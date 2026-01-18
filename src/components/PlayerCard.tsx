@@ -40,7 +40,7 @@ export function PlayerCard({ playerIndex, name, totalScore, onNameChange, suit, 
         </span>
         {isLeader && (
           <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full animate-bounce-in">
-            👑 Leader
+            👑 Winner
           </span>
         )}
       </div>
