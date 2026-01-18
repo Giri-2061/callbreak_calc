@@ -37,6 +37,17 @@ export function GameComplete({ players, finalScores, onNewGame, onViewHistory }:
     "One step closer to victory! 🏃",
   ];
 
+  const rareDiscouragingMessages = [
+    "Ouch... that was rough! 😬",
+    "Maybe card games aren't for you? 🤔",
+    "Did you even try? 👀",
+    "Yikes! Better luck elsewhere! 😅",
+    "That was... interesting! 💀",
+    "Nice try, I guess? 🤷",
+    "F for effort! 📉",
+    "The odds were not in your favor! 💔",
+  ];
+
   const getRandomMessage = (messages: string[]) => {
     return messages[Math.floor(Math.random() * messages.length)];
   };
@@ -44,7 +55,15 @@ export function GameComplete({ players, finalScores, onNewGame, onViewHistory }:
   const winnerMessage = getRandomMessage(winnerMessages);
   const getLoserMessage = (rank: number) => {
     if (rank === sortedPlayers.length - 1) {
+      // 15% chance of a rare discouraging message for last place
+      if (Math.random() < 0.15) {
+        return getRandomMessage(rareDiscouragingMessages);
+      }
       return "Don't worry, everyone has their day! 🌈";
+    }
+    // 10% chance of a rare discouraging message for other losers
+    if (Math.random() < 0.10) {
+      return getRandomMessage(rareDiscouragingMessages);
     }
     return getRandomMessage(loserMessages);
   };
