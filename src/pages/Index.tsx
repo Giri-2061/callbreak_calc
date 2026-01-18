@@ -43,21 +43,28 @@ export default function Index() {
     });
   }, []);
 
-  const handleAddRound = useCallback((bids: number[], tricks: number[]) => {
+  const handleAddRound = useCallback((bids: number[], tricks: number[], isAutoRound?: boolean) => {
     const scores = bids.map((bid, i) => calculateScore(bid, tricks[i]));
     
     setRounds(prev => [...prev, { bids, tricks, scores }]);
     
-    // Find winner of this round (highest score)
-    const maxScore = Math.max(...scores);
-    const winners = scores
-      .map((s, i) => s === maxScore ? players[i] : null)
-      .filter(Boolean);
-    
-    toast.success(
-      `Round ${rounds.length + 1} complete! 🎉`,
-      { description: `${winners.join(" & ")} won with ${maxScore.toFixed(1)} points` }
-    );
+    if (isAutoRound) {
+      toast.success(
+        `Round ${rounds.length + 1} - Auto Round! ⚡`,
+        { description: `Bids = 9! Everyone gets their bid points.` }
+      );
+    } else {
+      // Find winner of this round (highest score)
+      const maxScore = Math.max(...scores);
+      const winners = scores
+        .map((s, i) => s === maxScore ? players[i] : null)
+        .filter(Boolean);
+      
+      toast.success(
+        `Round ${rounds.length + 1} complete! 🎉`,
+        { description: `${winners.join(" & ")} won with ${maxScore.toFixed(1)} points` }
+      );
+    }
   }, [rounds.length, players]);
 
   const handleDeleteRound = useCallback((index: number) => {
@@ -137,9 +144,10 @@ export default function Index() {
             </div>
           </div>
 
-          {/* Redeal Rules */}
-          <div className="text-center text-xs text-muted-foreground/70">
+          {/* Special Rules */}
+          <div className="text-center text-xs text-muted-foreground/70 space-y-1">
             <p className="italic">Redeal if: No Spades • No Face Cards (J,Q,K,A) • Total bids &lt; 8</p>
+            <p className="text-warning/80">⚡ Auto Round: If total bids = 9, each player gets their bid points (no tricks played)</p>
           </div>
         </footer>
       </div>
