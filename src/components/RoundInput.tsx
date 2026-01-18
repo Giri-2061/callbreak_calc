@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Zap } from "lucide-react";
+import { useRef } from "react";
 
 interface RoundInputProps {
   players: string[];
@@ -13,6 +14,8 @@ export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps
   const [bids, setBids] = useState<string[]>(["", "", "", ""]);
   const [hands, setHands] = useState<string[]>(["", "", "", ""]);
   const [error, setError] = useState<string>("");
+  const bidRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const handsRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const parsedBids = bids.map(b => parseInt(b) || 0);
   const bidsSum = parsedBids.reduce((a, b) => a + b, 0);
@@ -68,6 +71,28 @@ export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps
     setHands(newHands);
   };
 
+  const handleBidKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (index < players.length - 1) {
+        bidRefs.current[index + 1]?.focus();
+      } else {
+        handsRefs.current[0]?.focus();
+      }
+    }
+  };
+
+  const handleHandsKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (index < players.length - 1) {
+        handsRefs.current[index + 1]?.focus();
+      } else {
+        handleSubmit();
+      }
+    }
+  };
+
   const handsSum = hands.reduce((sum, t) => sum + (parseInt(t) || 0), 0);
 
   return (
@@ -120,20 +145,24 @@ export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps
           <div key={index} className="grid grid-cols-[1fr_80px_80px] gap-2 items-center">
             <span className="font-medium truncate">{player}</span>
             <Input
+              ref={(el) => { bidRefs.current[index] = el; }}
               type="number"
               min={1}
               max={13}
               value={bids[index]}
               onChange={(e) => updateBid(index, e.target.value)}
+              onKeyDown={(e) => handleBidKeyDown(index, e)}
               placeholder="1-13"
               className="bg-secondary border-border text-center"
             />
             <Input
+              ref={(el) => { handsRefs.current[index] = el; }}
               type="number"
               min={0}
               max={13}
               value={hands[index]}
               onChange={(e) => updateHands(index, e.target.value)}
+              onKeyDown={(e) => handleHandsKeyDown(index, e)}
               placeholder="0-13"
               className={`bg-secondary border-border text-center ${isAutoRound ? "opacity-50" : ""}`}
               disabled={isAutoRound}
