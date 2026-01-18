@@ -217,35 +217,7 @@ export default function Index() {
           />
         </div>
 
-        {/* Footer with Rules */}
-        <footer className="space-y-3">
-          <div className="text-center text-muted-foreground text-sm">
-            <p>♠ ♥ ♦ ♣ • {MAX_ROUNDS}-round game • Bid 1-13 • ♣ ♦ ♥ ♠</p>
-          </div>
-          
-          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-4 text-sm">
-            <h4 className="font-semibold text-foreground mb-2 text-center">📖 Scoring Rules</h4>
-            <div className="grid md:grid-cols-3 gap-3 text-muted-foreground">
-              <div className="text-center">
-                <span className="text-success font-medium">✓ Make Bid</span>
-                <p className="text-xs mt-1">Bid 3, Win 3 = <strong className="text-foreground">3.0 pts</strong></p>
-              </div>
-              <div className="text-center">
-                <span className="text-blue-400 font-medium">★ Over-tricks</span>
-                <p className="text-xs mt-1">Bid 3, Win 5 = <strong className="text-foreground">3.2 pts</strong></p>
-              </div>
-              <div className="text-center">
-                <span className="text-destructive font-medium">✗ Bust</span>
-                <p className="text-xs mt-1">Bid 4, Win 2 = <strong className="text-foreground">-4.0 pts</strong></p>
-              </div>
-            </div>
-          </div>
 
-          <div className="text-center text-xs text-muted-foreground/70 space-y-1">
-            <p className="italic">Redeal if: No Spades • No Face Cards (J,Q,K,A) • Total bids &lt; 8</p>
-            <p className="text-warning">⚡ Auto Round: If total bids = 9, each player gets their bid points</p>
-          </div>
-        </footer>
       </div>
     </div>
   );
