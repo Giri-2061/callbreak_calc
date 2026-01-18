@@ -23,6 +23,7 @@ interface GameHistoryProps {
 
 export function GameHistory({ games, onDeleteGame }: GameHistoryProps) {
   const [expandedGame, setExpandedGame] = useState<string | null>(null);
+  const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
 
   if (games.length === 0) {
     return (
@@ -87,52 +88,62 @@ export function GameHistory({ games, onDeleteGame }: GameHistoryProps) {
               <div className="px-4 pb-4 animate-bounce-in">
                 <div className="bg-muted/30 rounded-lg p-3">
                   <div className="grid grid-cols-2 gap-2 mb-3">
-                    {game.players.map((player, i) => (
-                      <div 
-                        key={i} 
-                        className={`text-sm p-2 rounded ${
-                          game.finalScores[i] === game.winnerScore 
-                            ? "bg-primary/20 border border-primary/30" 
-                            : "bg-muted/50"
-                        }`}
-                      >
-                        <span className="text-muted-foreground">{player}:</span>
-                        <span className={`ml-2 font-bold ${
-                          game.finalScores[i] >= 0 ? "text-success" : "text-destructive"
-                        }`}>
-                          {game.finalScores[i].toFixed(1)}
-                        </span>
-                      </div>
-                    ))}
+                    {game.players.map((player, i) => {
+                      const playerKey = `${game.id}-${i}`;
+                      const isSelected = selectedPlayer === playerKey;
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => setSelectedPlayer(isSelected ? null : playerKey)}
+                          className={`text-sm p-2 rounded cursor-pointer transition-all ${
+                            game.finalScores[i] === game.winnerScore 
+                              ? "bg-primary/20 border border-primary/30" 
+                              : isSelected
+                              ? "bg-accent/30 border border-accent/30"
+                              : "bg-muted/50 hover:bg-muted/70"
+                          }`}
+                        >
+                          <span className="text-muted-foreground">{player}:</span>
+                          <span className={`ml-2 font-bold ${
+                            game.finalScores[i] >= 0 ? "text-success" : "text-destructive"
+                          }`}>
+                            {game.finalScores[i].toFixed(1)}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                   
-                  <div className="mt-4 pt-3 border-t border-muted/50">
-                    <p className="text-xs font-semibold text-foreground mb-2">Round Details:</p>
-                    <div className="space-y-2">
-                      {game.rounds.map((round, roundIdx) => (
-                        <div key={roundIdx} className="bg-background/50 rounded p-2">
-                          <p className="text-xs font-bold text-primary mb-1">Round {roundIdx + 1}</p>
-                          <div className="grid grid-cols-1 gap-1">
-                            {game.players.map((player, playerIdx) => {
-                              const bid = round.bids[playerIdx];
-                              const tricks = round.tricks[playerIdx];
-                              const score = round.scores[playerIdx];
-                              const success = tricks >= bid;
-                              return (
-                                <div key={playerIdx} className="flex justify-between items-center text-xs">
-                                  <span className="text-muted-foreground">{player}:</span>
-                                  <span className="text-muted-foreground">Bid {bid} • Won {tricks}</span>
-                                  <span className={`font-bold ${success ? "text-success" : "text-destructive"}`}>
-                                    {score > 0 ? "+" : ""}{score.toFixed(1)}
-                                  </span>
-                                </div>
-                              );
-                            })}
+                  {selectedPlayer && selectedPlayer.startsWith(game.id) && (
+                    <div className="mt-3 pt-3 border-t border-muted/50">
+                      {(() => {
+                        const playerIdx = parseInt(selectedPlayer.split("-")[1]);
+                        const player = game.players[playerIdx];
+                        return (
+                          <div>
+                            <p className="text-xs font-semibold text-foreground mb-2">{player}'s Round History:</p>
+                            <div className="space-y-1.5">
+                              {game.rounds.map((round, roundIdx) => {
+                                const bid = round.bids[playerIdx];
+                                const tricks = round.tricks[playerIdx];
+                                const score = round.scores[playerIdx];
+                                const success = tricks >= bid;
+                                return (
+                                  <div key={roundIdx} className="flex justify-between items-center text-xs bg-background/50 p-2 rounded">
+                                    <span className="text-primary font-bold">R{roundIdx + 1}:</span>
+                                    <span className="text-muted-foreground">Bid {bid} • Won {tricks}</span>
+                                    <span className={`font-bold ${success ? "text-success" : "text-destructive"}`}>
+                                      {score > 0 ? "+" : ""}{score.toFixed(1)}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })()}
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             )}
