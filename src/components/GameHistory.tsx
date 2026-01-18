@@ -11,7 +11,7 @@ interface CompletedGame {
   winnerScore: number;
   rounds: {
     bids: number[];
-    tricks: number[];
+    hands: number[];
     scores: number[];
   }[];
 }
@@ -125,9 +125,9 @@ export function GameHistory({ games, onDeleteGame }: GameHistoryProps) {
                             <div className="grid grid-cols-5 gap-2">
                               {game.rounds.map((round, roundIdx) => {
                                 const bid = round.bids[playerIdx];
-                                const tricks = round.tricks[playerIdx];
+                                const hands = round.hands[playerIdx];
                                 const score = round.scores[playerIdx];
-                                const success = tricks >= bid;
+                                const success = hands >= bid;
                                 return (
                                   <div key={roundIdx} className={`p-2 rounded text-center text-xs border ${
                                     success 
@@ -141,7 +141,7 @@ export function GameHistory({ games, onDeleteGame }: GameHistoryProps) {
                                     </p>
                                     <p className="text-muted-foreground mb-1">
                                       <span className="text-xs">Won</span>
-                                      <span className="font-semibold text-foreground block">{tricks}</span>
+                                      <span className="font-semibold text-foreground block">{hands}</span>
                                     </p>
                                     <div className={`pt-1 border-t ${success ? "border-success/20" : "border-destructive/20"}`}>
                                       <span className={`font-bold text-sm ${success ? "text-success" : "text-destructive"}`}>

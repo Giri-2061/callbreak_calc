@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 interface Round {
   bids: number[];
-  tricks: number[];
+  hands: number[];
   scores: number[];
 }
 
@@ -27,9 +27,9 @@ const SUITS = ["♠", "♥", "♦", "♣"];
 const MAX_ROUNDS = 5;
 const STORAGE_KEY = "callbreak-game-history";
 
-const calculateScore = (bid: number, tricks: number): number => {
-  if (tricks >= bid) {
-    return bid + (tricks - bid) * 0.1;
+const calculateScore = (bid: number, hands: number): number => {
+  if (hands >= bid) {
+    return bid + (hands - bid) * 0.1;
   } else {
     return -bid;
   }
@@ -78,9 +78,9 @@ export default function Index() {
     });
   }, []);
 
-  const handleAddRound = useCallback((bids: number[], tricks: number[], isAutoRound?: boolean) => {
-    const scores = bids.map((bid, i) => calculateScore(bid, tricks[i]));
-    const newRounds = [...rounds, { bids, tricks, scores }];
+  const handleAddRound = useCallback((bids: number[], hands: number[], isAutoRound?: boolean) => {
+    const scores = bids.map((bid, i) => calculateScore(bid, hands[i]));
+    const newRounds = [...rounds, { bids, hands, scores }];
     
     setRounds(newRounds);
     

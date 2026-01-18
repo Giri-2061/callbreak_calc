@@ -5,13 +5,13 @@ import { Plus, Zap } from "lucide-react";
 
 interface RoundInputProps {
   players: string[];
-  onAddRound: (bids: number[], tricks: number[], isAutoRound?: boolean) => void;
+  onAddRound: (bids: number[], hands: number[], isAutoRound?: boolean) => void;
   roundNumber: number;
 }
 
 export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps) {
   const [bids, setBids] = useState<string[]>(["", "", "", ""]);
-  const [tricks, setTricks] = useState<string[]>(["", "", "", ""]);
+  const [hands, setHands] = useState<string[]>(["", "", "", ""]);
   const [error, setError] = useState<string>("");
 
   const parsedBids = bids.map(b => parseInt(b) || 0);
@@ -24,13 +24,13 @@ export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps
     // Auto round: each player gets exactly their bid
     onAddRound(parsedBids, parsedBids, true);
     setBids(["", "", "", ""]);
-    setTricks(["", "", "", ""]);
+    setHands(["", "", "", ""]);
   };
 
   const handleSubmit = () => {
     setError("");
     
-    const parsedTricks = tricks.map(t => parseInt(t) || 0);
+    const parsedHands = hands.map(t => parseInt(t) || 0);
 
     // Validate bids (1-13)
     if (parsedBids.some(b => b < 1 || b > 13)) {
@@ -44,16 +44,16 @@ export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps
       return;
     }
 
-    // Validate tricks sum = 13
-    const tricksSum = parsedTricks.reduce((a, b) => a + b, 0);
-    if (tricksSum !== 13) {
-      setError(`Tricks must total 13 (currently ${tricksSum})`);
+    // Validate hands sum = 13
+    const handsSum = parsedHands.reduce((a, b) => a + b, 0);
+    if (handsSum !== 13) {
+      setError(`Hands must total 13 (currently ${handsSum})`);
       return;
     }
 
-    onAddRound(parsedBids, parsedTricks);
+    onAddRound(parsedBids, parsedHands);
     setBids(["", "", "", ""]);
-    setTricks(["", "", "", ""]);
+    setHands(["", "", "", ""]);
   };
 
   const updateBid = (index: number, value: string) => {
@@ -62,13 +62,13 @@ export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps
     setBids(newBids);
   };
 
-  const updateTricks = (index: number, value: string) => {
-    const newTricks = [...tricks];
-    newTricks[index] = value;
-    setTricks(newTricks);
+  const updateHands = (index: number, value: string) => {
+    const newHands = [...hands];
+    newHands[index] = value;
+    setHands(newHands);
   };
 
-  const tricksSum = tricks.reduce((sum, t) => sum + (parseInt(t) || 0), 0);
+  const handsSum = hands.reduce((sum, t) => sum + (parseInt(t) || 0), 0);
 
   return (
     <div className="card-table rounded-xl p-6 border border-border suit-pattern">
@@ -84,13 +84,13 @@ export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps
             </div>
           )}
           <div className={`text-sm px-3 py-1 rounded-full ${
-            tricksSum === 13 
+            handsSum === 13 
               ? "bg-success/20 text-success" 
-              : tricksSum > 13 
+              : handsSum > 13 
                 ? "bg-destructive/20 text-destructive" 
                 : "bg-muted text-muted-foreground"
           }`}>
-            Tricks: {tricksSum}/13
+            Hands: {handsSum}/13
           </div>
         </div>
       </div>
@@ -111,7 +111,7 @@ export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps
       <div className="grid grid-cols-[1fr_80px_80px] gap-2 mb-2 text-xs text-muted-foreground uppercase tracking-wider">
         <div>Player</div>
         <div className="text-center">Bid</div>
-        <div className="text-center">Won</div>
+        <div className="text-center">Hands</div>
       </div>
 
       {/* Player inputs */}
@@ -132,8 +132,8 @@ export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps
               type="number"
               min={0}
               max={13}
-              value={tricks[index]}
-              onChange={(e) => updateTricks(index, e.target.value)}
+              value={hands[index]}
+              onChange={(e) => updateHands(index, e.target.value)}
               placeholder="0-13"
               className={`bg-secondary border-border text-center ${isAutoRound ? "opacity-50" : ""}`}
               disabled={isAutoRound}

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 interface Round {
   bids: number[];
-  tricks: number[];
+  hands: number[];
   scores: number[];
 }
 
@@ -61,8 +61,8 @@ export function RoundHistory({ rounds, players, onDeleteRound }: RoundHistoryPro
                 </td>
                 {round.scores.map((score, playerIndex) => {
                   const bid = round.bids[playerIndex];
-                  const tricks = round.tricks[playerIndex];
-                  const success = tricks >= bid;
+                  const hands = round.hands[playerIndex];
+                  const success = hands >= bid;
                   
                   return (
                     <td key={playerIndex} className="p-3 text-center">
@@ -75,7 +75,7 @@ export function RoundHistory({ rounds, players, onDeleteRound }: RoundHistoryPro
                           {score > 0 ? "+" : ""}{score.toFixed(1)}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {bid}→{tricks}
+                          {bid}→{hands}
                         </span>
                       </div>
                     </td>
