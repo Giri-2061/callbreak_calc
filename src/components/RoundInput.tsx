@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus } from "lucide-react";
+import { Plus, Zap } from "lucide-react";
 
 interface RoundInputProps {
   players: string[];
-  onAddRound: (bids: number[], tricks: number[]) => void;
+  onAddRound: (bids: number[], tricks: number[], isAutoRound?: boolean) => void;
   roundNumber: number;
 }
 
@@ -14,10 +14,22 @@ export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps
   const [tricks, setTricks] = useState<string[]>(["", "", "", ""]);
   const [error, setError] = useState<string>("");
 
+  const parsedBids = bids.map(b => parseInt(b) || 0);
+  const bidsSum = parsedBids.reduce((a, b) => a + b, 0);
+  const allBidsValid = parsedBids.every(b => b >= 1 && b <= 13);
+  const isAutoRound = bidsSum === 9 && allBidsValid;
+
+  const handleAutoRound = () => {
+    setError("");
+    // Auto round: each player gets exactly their bid
+    onAddRound(parsedBids, parsedBids, true);
+    setBids(["", "", "", ""]);
+    setTricks(["", "", "", ""]);
+  };
+
   const handleSubmit = () => {
     setError("");
     
-    const parsedBids = bids.map(b => parseInt(b) || 0);
     const parsedTricks = tricks.map(t => parseInt(t) || 0);
 
     // Validate bids (1-13)
@@ -59,16 +71,35 @@ export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps
           <span className="text-2xl">🎴</span>
           Round {roundNumber}
         </h2>
-        <div className={`text-sm px-3 py-1 rounded-full ${
-          tricksSum === 13 
-            ? "bg-success/20 text-success" 
-            : tricksSum > 13 
-              ? "bg-destructive/20 text-destructive" 
-              : "bg-muted text-muted-foreground"
-        }`}>
-          Tricks: {tricksSum}/13
+        <div className="flex items-center gap-2">
+          {isAutoRound && (
+            <div className="text-xs px-2 py-1 rounded-full bg-warning/20 text-warning animate-pulse">
+              ⚡ Auto Round!
+            </div>
+          )}
+          <div className={`text-sm px-3 py-1 rounded-full ${
+            tricksSum === 13 
+              ? "bg-success/20 text-success" 
+              : tricksSum > 13 
+                ? "bg-destructive/20 text-destructive" 
+                : "bg-muted text-muted-foreground"
+          }`}>
+            Tricks: {tricksSum}/13
+          </div>
         </div>
       </div>
+
+      {/* Auto Round Alert */}
+      {isAutoRound && (
+        <div className="bg-warning/10 border border-warning/30 rounded-lg p-3 mb-4 text-center">
+          <p className="text-warning text-sm font-medium">
+            ⚡ Total bids = 9! Auto round available
+          </p>
+          <p className="text-warning/70 text-xs mt-1">
+            Each player gets their bid as points, no tricks played
+          </p>
+        </div>
+      )}
 
       {/* Headers */}
       <div className="grid grid-cols-[1fr_80px_80px] gap-2 mb-2 text-xs text-muted-foreground uppercase tracking-wider">
@@ -98,7 +129,8 @@ export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps
               value={tricks[index]}
               onChange={(e) => updateTricks(index, e.target.value)}
               placeholder="0-13"
-              className="bg-secondary border-border text-center"
+              className={`bg-secondary border-border text-center ${isAutoRound ? "opacity-50" : ""}`}
+              disabled={isAutoRound}
             />
           </div>
         ))}
@@ -111,14 +143,26 @@ export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps
         </p>
       )}
 
-      {/* Submit button */}
-      <Button 
-        onClick={handleSubmit}
-        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-lg gap-2"
-      >
-        <Plus className="w-5 h-5" />
-        Add Round
-      </Button>
+      {/* Submit buttons */}
+      <div className="space-y-2">
+        {isAutoRound ? (
+          <Button 
+            onClick={handleAutoRound}
+            className="w-full bg-warning text-warning-foreground hover:bg-warning/90 font-semibold text-lg gap-2"
+          >
+            <Zap className="w-5 h-5" />
+            Apply Auto Round
+          </Button>
+        ) : (
+          <Button 
+            onClick={handleSubmit}
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-lg gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            Add Round
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
