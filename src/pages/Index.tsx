@@ -55,6 +55,8 @@ export default function Index() {
   const [rounds, setRounds] = useState<Round[]>([]);
   const [gameComplete, setGameComplete] = useState(false);
   const [gameHistory, setGameHistory] = useState<CompletedGame[]>([]);
+  const [dealerIndex, setDealerIndex] = useState(0);
+  const [lastWinnerIndex, setLastWinnerIndex] = useState<number | null>(null);
 
   // Load game history on mount
   useEffect(() => {
@@ -80,6 +82,9 @@ export default function Index() {
     const newRounds = [...rounds, { bids, tricks, scores }];
     
     setRounds(newRounds);
+    
+    // Move dealer to next player
+    setDealerIndex(prev => (prev + 1) % players.length);
     
     if (isAutoRound) {
       toast.success(
@@ -126,6 +131,10 @@ export default function Index() {
       const updatedHistory = [completedGame, ...gameHistory];
       setGameHistory(updatedHistory);
       saveGameHistory(updatedHistory);
+      
+      // Set last winner and reset dealer for next game
+      setLastWinnerIndex(winnerIndex);
+      setDealerIndex(winnerIndex);
 
       setTimeout(() => setGameComplete(true), 500);
     }
@@ -146,8 +155,15 @@ export default function Index() {
   const handleNewGame = useCallback(() => {
     setRounds([]);
     setGameComplete(false);
+    // If there was a previous winner, start next game with them as dealer
+    // Otherwise reset to player 0
+    if (lastWinnerIndex !== null) {
+      setDealerIndex(lastWinnerIndex);
+    } else {
+      setDealerIndex(0);
+    }
     toast.success("New game started! 🃏");
-  }, []);
+  }, [lastWinnerIndex]);
 
   const handleReset = useCallback(() => {
     if (window.confirm("Start a new game? This will clear all scores.")) {
@@ -183,6 +199,7 @@ export default function Index() {
               onNameChange={(name) => handleNameChange(index, name)}
               suit={SUITS[index]}
               isLeader={rounds.length > 0 && index === leaderIndex}
+              isDealer={index === dealerIndex}
             />
           ))}
         </div>
