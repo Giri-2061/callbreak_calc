@@ -38,6 +38,12 @@ export function RoundInput({ players, onAddRound, roundNumber }: RoundInputProps
       return;
     }
 
+    // Validate bid sum >= 9
+    if (bidsSum < 9) {
+      setError(`Total bids must be at least 9 (currently ${bidsSum})`);
+      return;
+    }
+
     // Validate tricks sum = 13
     const tricksSum = parsedTricks.reduce((a, b) => a + b, 0);
     if (tricksSum !== 13) {

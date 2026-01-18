@@ -9,6 +9,7 @@ interface PlayerCardProps {
   suit: string;
   isLeader: boolean;
   isDealer?: boolean;
+  isGameWinner?: boolean;
 }
 
 const suitColors: Record<string, string> = {
@@ -18,7 +19,7 @@ const suitColors: Record<string, string> = {
   "♣": "text-foreground",
 };
 
-export function PlayerCard({ playerIndex, name, totalScore, onNameChange, suit, isLeader, isDealer }: PlayerCardProps) {
+export function PlayerCard({ playerIndex, name, totalScore, onNameChange, suit, isLeader, isDealer, isGameWinner }: PlayerCardProps) {
   const [isEditing, setIsEditing] = useState(false);
 
   return (
@@ -26,6 +27,8 @@ export function PlayerCard({ playerIndex, name, totalScore, onNameChange, suit, 
       className={`card-table rounded-xl p-4 border-2 transition-all duration-300 relative ${
         isLeader 
           ? "border-primary red-glow animate-pulse-red" 
+          : isGameWinner
+          ? "border-primary red-glow"
           : isDealer
           ? "border-amber-500/50 hover:border-amber-500"
           : "border-border hover:border-primary/50"
@@ -41,11 +44,6 @@ export function PlayerCard({ playerIndex, name, totalScore, onNameChange, suit, 
         <span className="bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
           P{playerIndex + 1}
         </span>
-        {isLeader && (
-          <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full animate-bounce-in">
-            👑 Winner
-          </span>
-        )}
         {isDealer && (
           <span className="text-xs bg-amber-500/20 text-amber-500 px-2 py-0.5 rounded-full animate-bounce-in">
             🂡 Dealer

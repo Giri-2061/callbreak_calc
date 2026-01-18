@@ -57,6 +57,7 @@ export default function Index() {
   const [gameHistory, setGameHistory] = useState<CompletedGame[]>([]);
   const [dealerIndex, setDealerIndex] = useState(0);
   const [lastWinnerIndex, setLastWinnerIndex] = useState<number | null>(null);
+  const [showStandings, setShowStandings] = useState(false);
 
   // Load game history on mount
   useEffect(() => {
@@ -135,8 +136,12 @@ export default function Index() {
       // Set last winner and reset dealer for next game
       setLastWinnerIndex(winnerIndex);
       setDealerIndex(winnerIndex);
+      setShowStandings(false);
 
       setTimeout(() => setGameComplete(true), 500);
+    } else if (newRounds.length === 4) {
+      // Show standings after round 4
+      setShowStandings(true);
     }
   }, [rounds, players, gameHistory]);
 
@@ -200,24 +205,72 @@ export default function Index() {
               suit={SUITS[index]}
               isLeader={rounds.length > 0 && index === leaderIndex}
               isDealer={index === dealerIndex}
+              isGameWinner={lastWinnerIndex === index && gameComplete}
             />
           ))}
         </div>
 
         {/* Main content */}
         {rounds.length < MAX_ROUNDS ? (
-          <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <RoundInput
-              players={players}
-              onAddRound={handleAddRound}
-              roundNumber={rounds.length + 1}
-            />
-            <RoundHistory
-              rounds={rounds}
-              players={players}
-              onDeleteRound={handleDeleteRound}
-            />
-          </div>
+          <>
+            {showStandings && rounds.length >= 4 && (
+              <div className="card-table rounded-xl p-6 border border-border mb-6 animate-bounce-in bg-gradient-to-br from-primary/5 to-secondary/5">
+                <div className="text-center mb-4">
+                  <h2 className="text-2xl font-display font-bold mb-1">
+                    {rounds.length === 4 ? "📊 Standings After Round 4" : "🏆 Final Standings"}
+                  </h2>
+                  <p className="text-xs text-muted-foreground">
+                    {rounds.length === 4 ? "Round 5 will decide the winner" : "Game will be decided by Round 5"}
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {players
+                    .map((player, index) => ({
+                      player,
+                      score: totalScores[index],
+                      index
+                    }))
+                    .sort((a, b) => b.score - a.score)
+                    .map((item, rank) => (
+                      <div
+                        key={item.index}
+                        className={`p-3 rounded-lg border-2 text-center transition-all ${
+                          rank === 0
+                            ? "bg-yellow-500/15 border-yellow-500/60 shadow-lg shadow-yellow-500/30 scale-105"
+                            : rank === 1
+                            ? "bg-gray-400/15 border-gray-400/60 shadow-md shadow-gray-400/20"
+                            : rank === 2
+                            ? "bg-orange-600/15 border-orange-600/60 shadow-md shadow-orange-600/20"
+                            : "bg-muted/10 border-muted/30"
+                        }`}
+                      >
+                        <div className="text-2xl mb-1">
+                          {rank === 0 ? "🥇" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : ""}
+                        </div>
+                        <p className="font-semibold text-sm truncate">{item.player}</p>
+                        <p className={`text-lg font-bold mt-1 ${
+                          rank === 0 ? "text-primary" : "text-foreground"
+                        }`}>
+                          {item.score.toFixed(1)}
+                        </p>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <RoundInput
+                players={players}
+                onAddRound={handleAddRound}
+                roundNumber={rounds.length + 1}
+              />
+              <RoundHistory
+                rounds={rounds}
+                players={players}
+                onDeleteRound={handleDeleteRound}
+              />
+            </div>
+          </>
         ) : (
           <div className="card-table rounded-xl p-8 border border-border text-center mb-6">
             <div className="text-5xl mb-4">🎊</div>
