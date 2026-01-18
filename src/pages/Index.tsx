@@ -112,9 +112,35 @@ export default function Index() {
           />
         </div>
 
-        {/* Footer */}
-        <footer className="text-center mt-8 text-muted-foreground text-sm">
-          <p>♠ ♥ ♦ ♣ • Bid 1-13 • Total tricks must equal 13 • ♣ ♦ ♥ ♠</p>
+        {/* Footer with Rules */}
+        <footer className="mt-8 space-y-3">
+          <div className="text-center text-muted-foreground text-sm">
+            <p>♠ ♥ ♦ ♣ • Standard 5-round game • Bid 1-13 • ♣ ♦ ♥ ♠</p>
+          </div>
+          
+          {/* Scoring Rules */}
+          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-4 text-sm">
+            <h4 className="font-semibold text-foreground mb-2 text-center">📖 Scoring Rules</h4>
+            <div className="grid md:grid-cols-3 gap-3 text-muted-foreground">
+              <div className="text-center">
+                <span className="text-green-400 font-medium">✓ Make Bid</span>
+                <p className="text-xs mt-1">Bid 3, Win 3 = <strong className="text-foreground">3.0 pts</strong></p>
+              </div>
+              <div className="text-center">
+                <span className="text-blue-400 font-medium">★ Over-tricks</span>
+                <p className="text-xs mt-1">Bid 3, Win 5 = <strong className="text-foreground">3.2 pts</strong></p>
+              </div>
+              <div className="text-center">
+                <span className="text-red-400 font-medium">✗ Bust</span>
+                <p className="text-xs mt-1">Bid 4, Win 2 = <strong className="text-foreground">-4.0 pts</strong></p>
+              </div>
+            </div>
+          </div>
+
+          {/* Redeal Rules */}
+          <div className="text-center text-xs text-muted-foreground/70">
+            <p className="italic">Redeal if: No Spades • No Face Cards (J,Q,K,A) • Total bids &lt; 8</p>
+          </div>
         </footer>
       </div>
     </div>
