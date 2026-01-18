@@ -1,0 +1,80 @@
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+
+interface PlayerCardProps {
+  playerIndex: number;
+  name: string;
+  totalScore: number;
+  onNameChange: (name: string) => void;
+  suit: string;
+  isLeader: boolean;
+}
+
+const suitColors: Record<string, string> = {
+  "♠": "text-foreground",
+  "♥": "text-destructive",
+  "♦": "text-destructive",
+  "♣": "text-foreground",
+};
+
+export function PlayerCard({ playerIndex, name, totalScore, onNameChange, suit, isLeader }: PlayerCardProps) {
+  const [isEditing, setIsEditing] = useState(false);
+
+  return (
+    <div 
+      className={`card-table rounded-xl p-4 border-2 transition-all duration-300 ${
+        isLeader 
+          ? "border-primary gold-glow animate-pulse-gold" 
+          : "border-border hover:border-primary/50"
+      }`}
+    >
+      {/* Suit decoration */}
+      <div className={`text-4xl opacity-20 absolute top-2 right-2 ${suitColors[suit]}`}>
+        {suit}
+      </div>
+      
+      {/* Player number badge */}
+      <div className="flex items-center gap-2 mb-3">
+        <span className="bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
+          P{playerIndex + 1}
+        </span>
+        {isLeader && (
+          <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full animate-bounce-in">
+            👑 Leader
+          </span>
+        )}
+      </div>
+
+      {/* Player name */}
+      {isEditing ? (
+        <Input
+          value={name}
+          onChange={(e) => onNameChange(e.target.value)}
+          onBlur={() => setIsEditing(false)}
+          onKeyDown={(e) => e.key === "Enter" && setIsEditing(false)}
+          autoFocus
+          className="bg-secondary border-primary/30 text-lg font-semibold mb-2"
+          maxLength={12}
+        />
+      ) : (
+        <h3 
+          onClick={() => setIsEditing(true)}
+          className="text-lg font-semibold truncate cursor-pointer hover:text-primary transition-colors mb-2"
+          title="Click to edit name"
+        >
+          {name || `Player ${playerIndex + 1}`}
+        </h3>
+      )}
+
+      {/* Total score */}
+      <div className="relative">
+        <p className="text-3xl font-display font-bold gold-text">
+          {totalScore.toFixed(1)}
+        </p>
+        <p className="text-xs text-muted-foreground uppercase tracking-wider">
+          Total Score
+        </p>
+      </div>
+    </div>
+  );
+}
