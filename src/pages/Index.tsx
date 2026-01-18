@@ -176,6 +176,13 @@ export default function Index() {
     }
   }, [handleNewGame]);
 
+  const handleViewHistory = () => {
+    setGameComplete(false);
+    setTimeout(() => {
+      document.getElementById("game-history")?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
+
   return (
     <div className="min-h-screen p-4 md:p-8 suit-pattern">
       {gameComplete && (
@@ -183,6 +190,7 @@ export default function Index() {
           players={players}
           finalScores={totalScores}
           onNewGame={handleNewGame}
+          onViewHistory={handleViewHistory}
         />
       )}
 
@@ -280,7 +288,7 @@ export default function Index() {
         )}
 
         {/* Game History */}
-        <div className="mb-6">
+        <div id="game-history" className="mb-6">
           <GameHistory 
             games={gameHistory}
             onDeleteGame={handleDeleteGame}
