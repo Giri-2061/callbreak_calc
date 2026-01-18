@@ -106,17 +106,32 @@ export function GameHistory({ games, onDeleteGame }: GameHistoryProps) {
                     ))}
                   </div>
                   
-                  <div className="text-xs text-muted-foreground">
-                    <span className="font-medium">Rounds: </span>
-                    {game.rounds.map((round, i) => {
-                      const maxScore = Math.max(...round.scores);
-                      const winnerIdx = round.scores.indexOf(maxScore);
-                      return (
-                        <span key={i} className="mr-2">
-                          R{i + 1}: {game.players[winnerIdx].split(" ")[0]} ({maxScore.toFixed(1)})
-                        </span>
-                      );
-                    })}
+                  <div className="mt-4 pt-3 border-t border-muted/50">
+                    <p className="text-xs font-semibold text-foreground mb-2">Round Details:</p>
+                    <div className="space-y-2">
+                      {game.rounds.map((round, roundIdx) => (
+                        <div key={roundIdx} className="bg-background/50 rounded p-2">
+                          <p className="text-xs font-bold text-primary mb-1">Round {roundIdx + 1}</p>
+                          <div className="grid grid-cols-1 gap-1">
+                            {game.players.map((player, playerIdx) => {
+                              const bid = round.bids[playerIdx];
+                              const tricks = round.tricks[playerIdx];
+                              const score = round.scores[playerIdx];
+                              const success = tricks >= bid;
+                              return (
+                                <div key={playerIdx} className="flex justify-between items-center text-xs">
+                                  <span className="text-muted-foreground">{player}:</span>
+                                  <span className="text-muted-foreground">Bid {bid} • Won {tricks}</span>
+                                  <span className={`font-bold ${success ? "text-success" : "text-destructive"}`}>
+                                    {score > 0 ? "+" : ""}{score.toFixed(1)}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
